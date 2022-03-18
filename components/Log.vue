@@ -26,18 +26,16 @@ export default {
         this.levelColor = '#a7e801'
         break
       case 'ERROR':
-        this.levelColor = '#ad0000'
+        this.levelColor = '#e50808'
         break
       case 'DEBUG':
-        this.levelColor = '#0404ee'
+        this.levelColor = '#0606fc'
         break
       case 'INFO':
         this.levelColor = '#269a26'
         break
     }
 
-    this.logs = await this.$axios.$get('/api/logs')
-    console.log(this.logs)
   }
 }
 </script>
@@ -55,7 +53,7 @@ export default {
 
 .level {
   /*color : #269a26;*/
-  @apply inline-block w-[60px] text-center
+  @apply inline-block w-[60px] text-center font-bold
 }
 
 .log-text {

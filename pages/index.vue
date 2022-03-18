@@ -5,6 +5,7 @@
       :level = log.level
       :text = log.text
       :time = log.time
+      :key="log.id"
     />
   </div>
 </template>
