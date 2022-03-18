@@ -31,15 +31,15 @@ def get_logs_():
     """
     data = request.get_json()
 
-    levels = data.get('levels')
-    time = data.get('time')
-    seconds = data.get('seconds')
-    text = data.get('text')
-    limit = data.get('limit')
+    levels = data.get('levels') if data else None
+    time = data.get('time') if data else None
+    seconds = data.get('seconds') if data else None
+    text = data.get('text') if data else None
+    limit = data.get('limit') if data else None
 
     logs = get_logs(database, levels=levels, limit=limit)
 
-    return jsonify(logs)
+    return jsonify(logs[::-1])
 
 
 

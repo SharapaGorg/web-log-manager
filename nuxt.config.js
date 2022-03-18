@@ -12,7 +12,8 @@ export default {
       { name: 'format-detection', content: 'telephone=no' }
     ],
     link: [
-      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
+      {rel : 'stylesheet', href : 'https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400&display=swap'}
     ]
   },
 
@@ -26,12 +27,16 @@ export default {
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
+  serverMiddleware: ["~/api/index"],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/tailwindcss
     '@nuxtjs/tailwindcss',
+    '@nuxtjs/axios'
   ],
+  axios: {},
+
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [

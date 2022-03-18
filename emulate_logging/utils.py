@@ -9,7 +9,7 @@ from faker import Faker
 
 from config import LINK
 
-levels = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
+levels_ = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 engine = create_engine(LINK)
 Session = sessionmaker(engine)
@@ -66,10 +66,13 @@ def _get_logs(_session : Session, levels : str) -> list:
 
     return _session.scalars(logs)
 
-def get_logs(_session : Session, levels : str = levels, limit : int = None) -> list[dict]:
+def get_logs(_session : Session, levels : str, limit : int) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
+
+    if not levels:
+        levels = levels
 
     logs = _get_logs(_session, levels)
     converted_logs : list[dict] = list()
