@@ -1,5 +1,5 @@
 # local server
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 # logs database interaction
@@ -9,19 +9,38 @@ from sqlalchemy import *
 from utils import *
 from config import LINK
 
-from json import dumps
-
 database = create_session(LINK)
 
 app = Flask(__name__)
 
 CORS(app)
 
-@app.route('/logs')
-def get_routes():
-    logs = get_logs(database)
+@app.route('/logs', methods=['GET', 'POST'])
+def get_logs_():
+    """
+    
+    Filter options
+    
+    data
+        levels
+        time
+        seconds
+        text
+        limit - count of logs that will be returned
 
-    # return dumps(logs, indent=4, sort_keys=True)
+    """
+    data = request.get_json()
+
+    levels = data.get('levels')
+    time = data.get('time')
+    seconds = data.get('seconds')
+    text = data.get('text')
+    limit = data.get('limit')
+
+    logs = get_logs(database, levels=levels, limit=limit)
+
     return jsonify(logs)
+
+
 
 app.run(debug=True)
