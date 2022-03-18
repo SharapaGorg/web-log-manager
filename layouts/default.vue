@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div class="px-2 py-1 bg-blue-700 cursor-pointer rounded-lg text-white mx-auto mt-3" style="width :fit-content">Accept</div>
+      <div class="px-3 py-1 bg-[#2f3136] cursor-pointer rounded-lg text-[#e5dfdf] mx-auto mt-3" style="width :fit-content">Accept</div>
     </div>
   </div>
 </template>
@@ -53,6 +53,7 @@ html {
 }
 
 .navbar {
+  /*color : #e5dfdf;*/
   @apply fixed bg-transparent/20 backdrop-filter backdrop-blur-lg w-screen pt-2 pb-3 text-center text-3xl text-[#c7bcbc]
 }
 
