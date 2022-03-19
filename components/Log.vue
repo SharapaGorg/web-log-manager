@@ -1,8 +1,12 @@
 <template>
   <div ref="root">
-      [<div class="time">{{ time }}</div>]
-      [<div class="level" :style="{ color : levelColor}">{{ level }}</div>]
-      <div class="log-text">{{ text }}</div>
+    [
+    <div class="time">{{ time }}</div>
+    ]
+    [
+    <div class="level" :style="{ color : levelColor}">{{ level }}</div>
+    ]
+    <div class="log-text">{{ text }}</div>
   </div>
 </template>
 
@@ -10,14 +14,14 @@
 export default {
   name: "Log",
   props: {
-    level : String,
-    text : String,
-    time : String,
-    seconds : Number
+    level: String,
+    text: String,
+    time: String,
+    seconds: Number
   },
   data() {
     return {
-      levelColor : '',
+      levelColor: '',
     }
   },
   async mounted() {
@@ -36,6 +40,20 @@ export default {
         break
     }
 
+    const selectedWord = this.$store.state.filterText
+
+    if (selectedWord) {
+      let start = this.text.indexOf(selectedWord)
+      let finish = start + selectedWord.length
+
+      this.underlineSlice(start, finish);
+    }
+
+  },
+  methods: {
+    underlineSlice (start, finish) {
+      //
+    }
   }
 }
 </script>

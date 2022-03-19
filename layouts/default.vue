@@ -10,7 +10,7 @@
     <div class="sidebar" v-show="sideBarActivated">
       <div class="text-[19px]">Filter</div>
       <div class="border-[#2f3136] border-y-[1px]">
-        Log Levels
+        Levels
         <div class="grid grid-cols-2 px-4 justify-items-start my-1">
           <div class="level-checkbox">
             <input type="checkbox" v-model="filterLevels.warning"/>
@@ -31,9 +31,15 @@
         </div>
       </div>
       <div class="border-[#2f3136] border-b-[1px]">
-        Text part
+        Content
         <div class="my-1 mb-2">
           <input class="outline-none px-2 w-4/5 rounded-sm" placeholder="Police officer" v-model="filterText"/>
+        </div>
+      </div>
+      <div class="border-[#2f3136] border-b-[1px]">
+        Time
+        <div class="mt-1 mb-2">
+            <calendar/>
         </div>
       </div>
       <div class="px-3 py-1 bg-[#2f3136] cursor-pointer rounded-lg text-[#e5dfdf] mx-auto mt-3"
@@ -44,10 +50,12 @@
 </template>
 
 <script>
+
 export default {
   name: "default",
   data() {
     return {
+      date : null,
       sideBarActivated: false,
       filterLevels: {
         warning: false,
@@ -101,6 +109,10 @@ export default {
 
 <style>
 
+*::-webkit-scrollbar {
+  width : 0 !important;
+}
+
 html {
   @apply bg-[#2f3136]
 }
@@ -116,7 +128,8 @@ html {
 
 .sidebar {
   font-family: 'Ubuntu Mono', monospace;
-  @apply w-[300px] h-full bg-white inline-block fixed right-0 top-[56px] bg-[#c7bcbc] text-center px-1 pt-2
+  height : calc(100% - 56px);
+  @apply w-[300px] bg-white inline-block fixed right-0 top-[56px] bg-[#c7bcbc] text-center px-1 pt-2 overflow-y-auto
 }
 
 .level-checkbox {
