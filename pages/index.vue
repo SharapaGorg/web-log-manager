@@ -20,7 +20,9 @@ export default {
     }
   },
   async mounted() {
-    this.logs = await this.$axios.$get(this.api)
+    if (!localStorage.getItem('levelsFilter')) {
+      this.logs = await this.$axios.$get(this.api)
+    }
   },
   methods: {
     applyFiltered() {
@@ -34,6 +36,8 @@ export default {
     async '$store.state.filtered' (val)  {
       if (!val) {
         let levels_ = this.filterLevels_()
+        console.log('REFILTERING', levels_)
+
 
         this.logs = await this.$axios.$post(this.api, {
           levels : levels_

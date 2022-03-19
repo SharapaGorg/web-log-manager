@@ -51,6 +51,17 @@ export default {
       }
     }
   },
+  mounted() {
+    const savedLevels = localStorage.getItem('levelsFilter')
+
+    if (savedLevels) {
+        for (let savedLevel of JSON.parse(savedLevels)) {
+          this.filterLevels[savedLevel.toLowerCase()] = true
+        }
+        console.log(this.filterLevels)
+        this.filter()
+    }
+  },
   methods: {
     filter() {
       let levels = []
@@ -61,6 +72,8 @@ export default {
         }
       }
 
+
+      localStorage.setItem('levelsFilter', JSON.stringify(levels))
       this.$store.commit('changeFillFilter', levels)
       this.$store.commit('reFilter')
     },
