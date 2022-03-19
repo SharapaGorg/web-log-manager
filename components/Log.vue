@@ -52,7 +52,6 @@ export default {
 }
 
 .level {
-  /*color : #269a26;*/
   @apply inline-block w-[60px] text-center font-bold
 }
 

@@ -13,24 +13,26 @@
         Log Levels
         <div class="grid grid-cols-2 px-4 justify-items-start">
           <div class="level-checkbox">
-            <input type="checkbox"/>
+            <input type="checkbox" v-model="filterLevels.warning"/>
             WARNING
           </div>
           <div class="level-checkbox">
-            <input type="checkbox"/>
+            <input type="checkbox" v-model="filterLevels.info"/>
             INFO
           </div>
           <div class="level-checkbox">
-            <input type="checkbox"/>
+            <input type="checkbox" v-model="filterLevels.debug"/>
             DEBUG
           </div>
           <div class="level-checkbox">
-            <input type="checkbox"/>
+            <input type="checkbox" v-model="filterLevels.error"/>
             ERROR
           </div>
         </div>
       </div>
-      <div class="px-3 py-1 bg-[#2f3136] cursor-pointer rounded-lg text-[#e5dfdf] mx-auto mt-3" style="width :fit-content">Accept</div>
+      <div class="px-3 py-1 bg-[#2f3136] cursor-pointer rounded-lg text-[#e5dfdf] mx-auto mt-3"
+           style="width :fit-content" @click="filter">Apply
+      </div>
     </div>
   </div>
 </template>
@@ -40,8 +42,28 @@ export default {
   name: "default",
   data() {
     return {
-      sideBarActivated : false
+      sideBarActivated: false,
+      filterLevels: {
+        warning: false,
+        error: false,
+        info: false,
+        debug: false
+      }
     }
+  },
+  methods: {
+    filter() {
+      let levels = []
+
+      for (let elem in this.filterLevels) {
+        if (this.filterLevels[elem]) {
+          levels.push(elem.toUpperCase())
+        }
+      }
+
+      this.$store.commit('changeFillFilter', levels)
+      this.$store.commit('reFilter')
+    },
   }
 }
 </script>
