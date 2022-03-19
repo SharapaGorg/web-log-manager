@@ -1,5 +1,6 @@
 export const state = () => ({
   levelsFilter : ['WARNING', 'ERROR', 'DEBUG', 'INFO'],
+  filterText : '',
   filtered : true
 })
 
@@ -9,5 +10,8 @@ export const mutations = {
   },
   changeFillFilter(state, value) {
     state.levelsFilter = value
+  },
+  changeFilterText(state, value) {
+    state.filterText = value
   }
 }

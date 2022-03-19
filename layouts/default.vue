@@ -11,7 +11,7 @@
       <div class="text-[19px]">Filter</div>
       <div class="border-[#2f3136] border-y-[1px]">
         Log Levels
-        <div class="grid grid-cols-2 px-4 justify-items-start">
+        <div class="grid grid-cols-2 px-4 justify-items-start my-1">
           <div class="level-checkbox">
             <input type="checkbox" v-model="filterLevels.warning"/>
             WARNING
@@ -28,6 +28,12 @@
             <input type="checkbox" v-model="filterLevels.error"/>
             ERROR
           </div>
+        </div>
+      </div>
+      <div class="border-[#2f3136] border-b-[1px]">
+        Text part
+        <div class="my-1 mb-2">
+          <input class="outline-none px-2 w-4/5 rounded-sm" placeholder="Police officer" v-model="filterText"/>
         </div>
       </div>
       <div class="px-3 py-1 bg-[#2f3136] cursor-pointer rounded-lg text-[#e5dfdf] mx-auto mt-3"
@@ -48,18 +54,25 @@ export default {
         error: false,
         info: false,
         debug: false
-      }
+      },
+      filterText: ''
     }
   },
   mounted() {
     const savedLevels = localStorage.getItem('levelsFilter')
+    const savedText = localStorage.getItem('textFilter')
 
     if (savedLevels) {
-        for (let savedLevel of JSON.parse(savedLevels)) {
-          this.filterLevels[savedLevel.toLowerCase()] = true
-        }
-        console.log(this.filterLevels)
-        this.filter()
+      for (let savedLevel of JSON.parse(savedLevels)) {
+        this.filterLevels[savedLevel.toLowerCase()] = true
+      }
+    }
+    if (savedText) {
+      this.filterText = savedText
+    }
+
+    if (savedLevels || savedText) {
+      this.filter()
     }
   },
   methods: {
@@ -72,9 +85,14 @@ export default {
         }
       }
 
-
       localStorage.setItem('levelsFilter', JSON.stringify(levels))
+      localStorage.setItem('textFilter', this.filterText)
+
+      // filter levels
       this.$store.commit('changeFillFilter', levels)
+      // filter text
+      this.$store.commit('changeFilterText', this.filterText)
+      // update logs
       this.$store.commit('reFilter')
     },
   }

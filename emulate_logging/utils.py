@@ -49,7 +49,7 @@ def create_session(link : str) -> Session:
 
     return _session_()
 
-def _get_logs(_session : Session, levels : str) -> list:
+def _get_logs(_session : Session, levels : str, text : str) -> list:
     """
     Get logs from database
 
@@ -59,14 +59,16 @@ def _get_logs(_session : Session, levels : str) -> list:
 
     """
 
+    logs = select(Log)
+
     if levels:
-        logs = select(Log).where(Log.level.in_(levels))
-    else:
-        logs = select(Log)
+        logs = logs.where(Log.level.in_(levels))
+    if text:
+        logs = logs.where(Log.text.contains(text))
 
     return _session.scalars(logs)
 
-def get_logs(_session : Session, levels : str, limit : int) -> list[dict]:
+def get_logs(_session : Session, levels : str, limit : int, text : str) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
@@ -74,7 +76,7 @@ def get_logs(_session : Session, levels : str, limit : int) -> list[dict]:
     if not levels:
         levels = levels
 
-    logs = _get_logs(_session, levels)
+    logs = _get_logs(_session, levels, text)
     converted_logs : list[dict] = list()
 
     ignore_vars = ['_sa_instance_state']

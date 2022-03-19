@@ -1,5 +1,6 @@
 export default {
   ssr : false,
+  target : 'static',
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'web-log-manager',
@@ -28,7 +29,6 @@ export default {
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
-  // serverMiddleware: ["~/api/index"],
 
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
@@ -45,5 +45,8 @@ export default {
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+  router: {
+    base: '/shared/egor'
   }
 }

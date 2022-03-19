@@ -20,7 +20,7 @@ export default {
     }
   },
   async mounted() {
-    if (!localStorage.getItem('levelsFilter')) {
+    if (!localStorage.getItem('levelsFilter') && !localStorage.getItem('textFilter')) {
       this.logs = await this.$axios.$get(this.api)
     }
   },
@@ -30,17 +30,20 @@ export default {
     },
     filterLevels_() {
       return this.$store.state.levelsFilter
+    },
+    filterText_() {
+      return this.$store.state.filterText
     }
   },
   watch: {
     async '$store.state.filtered' (val)  {
       if (!val) {
         let levels_ = this.filterLevels_()
-        console.log('REFILTERING', levels_)
-
+        let text_ = this.filterText_()
 
         this.logs = await this.$axios.$post(this.api, {
-          levels : levels_
+          levels : levels_,
+          text : text_
         })
 
         this.applyFiltered()

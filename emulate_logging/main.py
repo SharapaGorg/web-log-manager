@@ -37,10 +37,13 @@ def get_logs_():
     text = data.get('text') if data else None
     limit = data.get('limit') if data else None
 
-    logs = get_logs(database, levels=levels, limit=limit)
+    logs = get_logs(database, levels=levels, limit=limit, text=text)
 
     return jsonify(logs[::-1])
 
 
 
+# dev
 app.run(debug=True)
+# prod
+app.run(debug=True, host='localhost', port=9001)
