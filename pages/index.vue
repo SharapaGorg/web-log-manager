@@ -33,6 +33,9 @@ export default {
     },
     filterText_() {
       return this.$store.state.filterText
+    },
+    filterTime_() {
+      return this.$store.state.filterTimeInSeconds
     }
   },
   watch: {
@@ -40,6 +43,9 @@ export default {
       if (!val) {
         let levels_ = this.filterLevels_()
         let text_ = this.filterText_()
+        let time_ = this.filterTime_()
+
+        console.log(time_)
 
         this.logs = await this.$axios.$post(this.api, {
           levels : levels_,

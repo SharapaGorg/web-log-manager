@@ -1,14 +1,23 @@
 <template>
   <div ref="root">
     <div>
-      <input class="outline-none px-2 w-4/5 rounded-sm" placeholder="2022/3/18 - 2022/3/18"/>
+      <input
+        v-model='time1'
+        class="outline-none px-2 w-2/5 rounded-sm"
+        placeholder="2022/3/18"
+      />
+      <input
+        v-model='time2'
+        class="outline-none px-2 w-2/5 rounded-sm"
+        placeholder="2022/3/18"
+      />
     </div>
     <div class="calendar disable-select">
 
       <div>
         <div class="grid grid-cols-3 justify-items-center">
           <div @click="decrementYear(1)" class="crement">-</div>
-          <input v-model="selectedYear1" class="outline-none w-[32px] bg-transparent"/>
+          <input v-model="selectedYear1" class="outline-none w-[32px] bg-transparent text-center"/>
           <div @click="incrementYear(1)" class="crement">+</div>
         </div>
 
@@ -30,7 +39,7 @@
       <div>
         <div class="grid grid-cols-3 justify-items-center">
           <div @click="decrementYear(2)" class="crement">-</div>
-          <input v-model="selectedYear2" class="outline-none w-[32px] bg-transparent"/>
+          <input v-model="selectedYear2" class="outline-none w-[32px] bg-transparent text-center"/>
           <div @click="incrementYear(2)" class="crement">+</div>
         </div>
 
@@ -58,19 +67,46 @@ export default {
   name: 'Calendar',
   data() {
     return {
-      selectedYear1: 2022,
-      selectedYear2: 2022,
-      selectedMonth1: 'April',
-      selectedMonth2: 'February',
+      time1: '1970/2/1',
+      time2 : '3000/12/30',
+      selectedYear1: 1970,
+      selectedYear2: 3000,
+      selectedMonth1: 'February',
+      selectedMonth2: 'December',
       selectedDay1: 1,
-      selectedDay2: 1,
+      selectedDay2: 30,
       months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     }
   },
+  mounted() {
+    this.time1 = this.selectedYear1 + '/' + (this.months.indexOf(this.selectedMonth1) + 1) + '/' + this.selectedDay1
+    this.time2 = this.selectedYear2 + '/' + (this.months.indexOf(this.selectedMonth2) + 1) + '/' + this.selectedDay2
+  },
   methods: {
+    setDate_(index, key, value) {
+      let currentDate = this['time' + index].split('/')
+      currentDate[key] = value
+
+      this['time' + index] = currentDate.join('/')
+    },
+    setYear(index) {
+      this.setDate_(index, 0, this['selectedYear' + index])
+    },
+    setDay(index) {
+      this.setDate_(index, 2, this['selectedDay' + index])
+    },
+    setMonth(index) {
+      let month = this.months.indexOf(this['selectedMonth' + index]) + 1
+      this.setDate_(index, 1, month)
+    },
     decrementYear(index) {
       if (this['selectedYear' + index] > 0) {
         this['selectedYear' + index]--
+      }
+    },
+    decrementDay(index) {
+      if (this['selectedDay' + index] > 1) {
+        this['selectedDay' + index]--
       }
     },
     incrementYear(index) {
@@ -78,11 +114,6 @@ export default {
     },
     incrementDay(index) {
       this['selectedDay' + index]++
-    },
-    decrementDay(index) {
-      if (this['selectedDay' + index] > 0) {
-        this['selectedDay' + index]--
-      }
     },
     changeMonth(index, action) {
       let currentIndex = this.months.indexOf(this['selectedMonth' + index])
@@ -95,7 +126,36 @@ export default {
       }
 
       this['selectedMonth' + index] = this.months[0]
-
+    }
+  },
+  watch: {
+    time1() {
+      this.$store.commit('changeFilterTime', [
+        0, this.time1
+      ])
+    },
+    time2() {
+      this.$store.commit('changeFilterTime', [
+        1, this.time2
+      ])
+    },
+    selectedYear1() {
+      this.setYear(1)
+    },
+    selectedYear2() {
+      this.setYear(2)
+    },
+    selectedDay1() {
+      this.setDay(1)
+    },
+    selectedDay2() {
+      this.setDay(2)
+    },
+    selectedMonth1() {
+      this.setMonth(1)
+    },
+    selectedMonth2() {
+      this.setMonth(2)
     }
   }
 }
@@ -114,7 +174,7 @@ export default {
 
 .crement {
   transform: translateY(-4px);
-  @apply inline-block cursor-pointer text-xl font-bold
+  @apply inline-block cursor-pointer text-xl
 }
 
 .calendar {

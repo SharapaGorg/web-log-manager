@@ -85,7 +85,19 @@ export default {
   },
   methods: {
     filter() {
+      let time = this.$store.state.filterTime
       let levels = []
+      let timeInSeconds = []
+
+      for (let elem of time) {
+        let seconds = 0
+        let time_ = elem.split('/')
+
+        let datetime = new Date(parseInt(time_[0]), parseInt(time_[1]) - 1, parseInt(time_[2]))
+        seconds = datetime.getTime() / 1000
+
+        timeInSeconds.push(seconds)
+      }
 
       for (let elem in this.filterLevels) {
         if (this.filterLevels[elem]) {
@@ -100,6 +112,8 @@ export default {
       this.$store.commit('changeFillFilter', levels)
       // filter text
       this.$store.commit('changeFilterText', this.filterText)
+      // filter time
+      this.$store.commit('replaceFilterTimeInSeconds', timeInSeconds)
       // update logs
       this.$store.commit('reFilter')
     },
