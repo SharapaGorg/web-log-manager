@@ -24,20 +24,19 @@ def get_logs_():
     data
         levels
         time
-        seconds
+        seconds - range
         text
         limit - count of logs that will be returned
 
     """
     data = request.get_json()
 
-    levels = data.get('levels') if data else None
-    time = data.get('time') if data else None
-    seconds = data.get('seconds') if data else None
-    text = data.get('text') if data else None
-    limit = data.get('limit') if data else None
+    levels : list = data.get('levels') if data else None
+    seconds : list = data.get('seconds') if data else None
+    text : str = data.get('text') if data else None
+    limit : int = data.get('limit') if data else None
 
-    logs = get_logs(database, levels=levels, limit=limit, text=text)
+    logs = get_logs(database, levels, limit, text, seconds)
 
     return jsonify(logs[::-1])
 
