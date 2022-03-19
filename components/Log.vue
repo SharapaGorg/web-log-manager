@@ -6,7 +6,10 @@
     [
     <div class="level" :style="{ color : levelColor}">{{ level }}</div>
     ]
-    <div class="log-text">{{ text }}</div>
+    <div class="log-text" v-show="!slice">{{ text }}</div>
+    <div class="log-text" v-show="slice">
+      <span>{{ beforeSlice }}<span class="bg-blue-500">{{ slice }}</span>{{ afterSlice }}</span>
+    </div>
   </div>
 </template>
 
@@ -22,6 +25,9 @@ export default {
   data() {
     return {
       levelColor: '',
+      beforeSlice: '',
+      afterSlice: '',
+      slice: ''
     }
   },
   async mounted() {
@@ -40,19 +46,31 @@ export default {
         break
     }
 
-    const selectedWord = this.$store.state.filterText
-
-    if (selectedWord) {
-      let start = this.text.indexOf(selectedWord)
-      let finish = start + selectedWord.length
-
-      this.underlineSlice(start, finish);
-    }
+    this.detectRange_()
 
   },
   methods: {
-    underlineSlice (start, finish) {
-      //
+    detectRange_() {
+      const selectedWord = this.$store.state.filterText
+
+      if (selectedWord) {
+        let start = this.text.indexOf(selectedWord)
+        let finish = start + selectedWord.length
+
+        this.underlineSlice(start, finish);
+      } else {
+        this.beforeSlice = this.afterSlice = this.slice = ''
+      }
+    },
+    underlineSlice(start, finish) {
+      this.beforeSlice = this.text.slice(0, start)
+      this.afterSlice = this.text.slice(finish, this.text.length - 1)
+      this.slice = this.text.slice(start, finish)
+    }
+  },
+  watch: {
+    '$store.state.filtered' (val) {
+        this.detectRange_()
     }
   }
 }

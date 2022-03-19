@@ -1,16 +1,8 @@
 <template>
   <div ref="root">
     <div>
-      <input
-        v-model='time1'
-        class="outline-none px-2 w-2/5 rounded-sm"
-        placeholder="2022/3/18"
-      />
-      <input
-        v-model='time2'
-        class="outline-none px-2 w-2/5 rounded-sm"
-        placeholder="2022/3/18"
-      />
+      <span class="outline-none px-2 w-2/5 rounded-sm">{{ time1 }}</span>
+      <span class="outline-none px-2 w-2/5 rounded-sm">{{ time2 }}</span>
     </div>
     <div class="calendar disable-select">
 
@@ -68,7 +60,7 @@ export default {
   data() {
     return {
       time1: '1970/2/1',
-      time2 : '3000/12/30',
+      time2: '3000/12/30',
       selectedYear1: 1970,
       selectedYear2: 3000,
       selectedMonth1: 'February',

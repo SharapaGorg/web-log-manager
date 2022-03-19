@@ -45,11 +45,10 @@ export default {
         let text_ = this.filterText_()
         let time_ = this.filterTime_()
 
-        console.log(time_)
-
         this.logs = await this.$axios.$post(this.api, {
           levels : levels_,
-          text : text_
+          text : text_,
+          seconds : time_
         })
 
         this.applyFiltered()
