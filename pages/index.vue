@@ -23,6 +23,17 @@ export default {
     if (!localStorage.getItem('levelsFilter') && !localStorage.getItem('textFilter')) {
       this.logs = await this.$axios.$get(this.api)
     }
+
+    setInterval(async () => {
+      // monitor log updates
+      const currentLogs = await this.$axios.$get(this.api)
+      console.log(1)
+
+      if (this.logs !== currentLogs) {
+        this.logs = currentLogs
+      }
+    }, 1000)
+
   },
   methods: {
     applyFiltered() {

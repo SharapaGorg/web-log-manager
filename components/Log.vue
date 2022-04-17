@@ -1,5 +1,5 @@
 <template>
-  <div ref="root">
+  <div ref="root" class="log">
     [
     <div class="time">{{ time }}</div>
     ]
@@ -92,7 +92,12 @@ export default {
 }
 
 .log-text {
+  /*transform : translateY(8px);*/
   @apply inline-block
+}
+
+.log {
+  @apply h-[24px]
 }
 
 </style>

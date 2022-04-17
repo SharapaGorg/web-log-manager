@@ -123,7 +123,7 @@ export default {
 
 <style>
 
-*::-webkit-scrollbar {
+html::-webkit-scrollbar {
   width : 0 !important;
 }
 

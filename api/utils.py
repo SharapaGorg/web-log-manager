@@ -76,7 +76,7 @@ def get_logs(_session : Session, levels : str, limit : int, text : str, seconds 
     """
 
     if not levels:
-        levels = levels
+        levels = levels_
 
     logs = _get_logs(_session, levels, text, seconds)
     converted_logs : list[dict] = list()
@@ -99,21 +99,33 @@ def get_logs(_session : Session, levels : str, limit : int, text : str, seconds 
 
     return converted_logs
 
-def generate_logs(_session : Session, count : int):
+def generate_logs(_session : Session, count : int) -> list[Log]:
     """
     Generate logs and add them to database
     """
 
+    logs = list()
+
     for i in range(count):
-        y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
-
-        current_time = f"{y}/{m}/{d}/{hh}/{mm}/{ss}"
-        seconds_time = int(time.time())
-
-        log = Log(time=current_time, level=random.choice(levels), text=fake.sentence(10), seconds=seconds_time)
-
-        _session.add(log)
+        new_log = generate_log(_session)
+        logs.append(new_log)
 
     _session.commit()
+
+    return logs
+
+def generate_log(_session : Session) -> Log:
+    """ Generate one log and add to the database """
+    y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
+
+    current_time = f"{y}/{m}/{d}/{hh}/{mm}/{ss}"
+    seconds_time = int(time.time())
+
+    log = Log(time=current_time, level=random.choice(levels_), text=fake.sentence(10), seconds=seconds_time)
+
+    _session.add(log)
+    _session.commit()
+
+    return log
 
 Base.metadata.create_all(engine)
