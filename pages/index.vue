@@ -2,9 +2,9 @@
   <div ref="root">
     <log
       v-for="log in logs"
-      :level = log.level
-      :text = log.text
-      :time = log.time
+      :level=log.level
+      :text=log.text
+      :time=log.time
       :key="log.id"
     />
   </div>
@@ -15,8 +15,9 @@ export default {
   name: 'IndexPage',
   data() {
     return {
-      logs : [],
-      api : 'http://127.0.0.1:5000/logs'
+      logs: [],
+      api: 'http://127.0.0.1:5000/logs',
+      monitor: NaN
     }
   },
   async mounted() {
@@ -24,7 +25,7 @@ export default {
       this.logs = await this.$axios.$get(this.api)
     }
 
-    setInterval(async () => {
+    this.monitor = setInterval(async () => {
       // monitor log updates
       await this.filter()
     }, 1000)
@@ -53,10 +54,10 @@ export default {
       let table_ = this.filterTable_()
 
       const currentLogs = await this.$axios.$post(this.api, {
-        levels : levels_,
-        text : text_,
-        seconds : time_,
-        tablename : table_
+        levels: levels_,
+        text: text_,
+        seconds: time_,
+        tablename: table_
       })
 
       if (currentLogs !== this.logs) {
@@ -66,12 +67,15 @@ export default {
       this.applyFiltered()
     }
   },
+  destroyed() {
+    clearInterval(this.monitor)
+  },
   watch: {
-    async '$store.state.filtered' (val)  {
+    async '$store.state.filtered'(val) {
       if (!val) {
         await this.filter()
       }
-    }
+    },
   }
 }
 </script>

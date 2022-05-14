@@ -13,7 +13,7 @@ from sys import argv
 app = Flask(__name__)
 
 CORS(app)
-
+database = create_session(LINK)
 
 @app.route('/logs', methods=['GET', 'POST'])
 def get_logs_():
@@ -29,7 +29,6 @@ def get_logs_():
 
     """
     try:
-        database = create_session(LINK)
         data = request.get_json()
 
         levels: list = data.get('levels') if data else None
@@ -50,6 +49,21 @@ def get_logs_():
 @app.route('/tables', methods=['GET', 'POST'])
 def get_tables_():
     return jsonify(get_tables())
+
+@app.route('/generate_log', methods=['POST'])
+def generate_log_():
+    data = request.get_json()
+    table_name = data.get('tablename')
+    target_table = get_table(table_name)
+
+    log = generate_log(database, target_table)
+
+    return jsonify({
+        'id' : log.id,
+        'time' : log.time,
+        'level' : log.level,
+        'text' : log.text
+    })
 
 
 if len(argv) == 1:
