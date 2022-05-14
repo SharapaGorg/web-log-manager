@@ -17,6 +17,8 @@ Base = declarative_base()
 
 fake = Faker()
 
+DEFAULT_TABLE = 'logs'
+
 class Log(Base):
     """
 
@@ -30,9 +32,10 @@ class Log(Base):
 
     """
 
-    __tablename__ = "logs"
+    __tablename__ = DEFAULT_TABLE
 
-    id = Column(Integer, nullable=False, unique=True, primary_key=True, autoincrement=True)
+    id = Column(Integer, nullable=False, unique=True,
+                primary_key=True, autoincrement=True)
     time = Column(String, nullable=False)
     seconds = Column(Integer, nullable=False)
     level = Column(String, nullable=False)
@@ -41,7 +44,12 @@ class Log(Base):
     def __repr__(self) -> str:
         return "<{0.__class__.__name__} (id={0.id!r}, time={0.time!r}, level={0.level!r}, text={0.text!r}, seconds={0.seconds!r})>".format(self)
 
-def create_session(link : str) -> Session:
+
+TABLES = {
+    DEFAULT_TABLE : Log
+}
+
+def create_session(link: str) -> Session:
     """
     Create session to provide interaction with database
     """
@@ -49,7 +57,34 @@ def create_session(link : str) -> Session:
 
     return _session_()
 
-def _get_logs(_session : Session, levels : str, text : str, seconds : list) -> list:
+
+def get_table(tablename: str):
+    if tablename in TABLES:
+        return TABLES[tablename]
+
+    class SelectedTable(Base):
+        __tablename__ = tablename
+        __table_args__ = {'extend_existing': True}
+
+        id = Column(Integer, nullable=False, unique=True,
+                    primary_key=True, autoincrement=True)
+        time = Column(String, nullable=False)
+        seconds = Column(Integer, nullable=False)
+        level = Column(String, nullable=False)
+        text = Column(String, nullable=False)
+
+
+    Base.metadata.create_all(engine)
+    TABLES[tablename] = SelectedTable
+
+    return SelectedTable
+
+def get_tables() -> list:
+    inspector = inspect(engine)
+    return inspector.get_table_names()
+
+
+def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablename: str) -> list:
     """
     Get logs from database
 
@@ -59,18 +94,21 @@ def _get_logs(_session : Session, levels : str, text : str, seconds : list) -> l
 
     """
 
-    logs = select(Log)
+    _table = get_table(tablename)
+    logs = select(_table)
 
     if levels:
-        logs = logs.where(Log.level.in_(levels))
+        logs = logs.where(_table.level.in_(levels))
     if text:
-        logs = logs.where(Log.text.contains(text))
+        logs = logs.where(_table.text.contains(text))
     if seconds:
-        logs = logs.where(Log.seconds >= seconds[0]).where(Log.seconds <= seconds[1])
+        logs = logs.where(_table.seconds >= seconds[0]).where(
+            _table.seconds <= seconds[1])
 
     return _session.scalars(logs)
 
-def get_logs(_session : Session, levels : str, limit : int, text : str, seconds : list) -> list[dict]:
+
+def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, tablename: str) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
@@ -78,8 +116,8 @@ def get_logs(_session : Session, levels : str, limit : int, text : str, seconds 
     if not levels:
         levels = levels_
 
-    logs = _get_logs(_session, levels, text, seconds)
-    converted_logs : list[dict] = list()
+    logs = _get_logs(_session, levels, text, seconds, tablename)
+    converted_logs: list[dict] = list()
 
     ignore_vars = ['_sa_instance_state']
     counter = int()
@@ -94,12 +132,14 @@ def get_logs(_session : Session, levels : str, limit : int, text : str, seconds 
             if var not in ignore_vars:
                 converted_log[var] = getattr(log, var)
 
+
         counter += 1
         converted_logs.append(converted_log)
 
     return converted_logs
 
-def generate_logs(_session : Session, count : int) -> list[Log]:
+
+def generate_logs(_session: Session, count: int) -> list[Log]:
     """
     Generate logs and add them to database
     """
@@ -114,18 +154,21 @@ def generate_logs(_session : Session, count : int) -> list[Log]:
 
     return logs
 
-def generate_log(_session : Session) -> Log:
+
+def generate_log(_session: Session, CurrentTable: Base = Log) -> Log:
     """ Generate one log and add to the database """
     y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
 
     current_time = f"{y}/{m}/{d}/{hh}/{mm}/{ss}"
     seconds_time = int(time.time())
 
-    log = Log(time=current_time, level=random.choice(levels_), text=fake.sentence(10), seconds=seconds_time)
+    log = CurrentTable(time=current_time, level=random.choice(levels_),
+                       text=fake.sentence(10), seconds=seconds_time)
 
     _session.add(log)
     _session.commit()
 
     return log
+
 
 Base.metadata.create_all(engine)

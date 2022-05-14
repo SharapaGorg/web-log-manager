@@ -3,7 +3,8 @@ export const state = () => ({
   filterText : '',
   filterTime : ['1970/2/1', '3000/12/30'],
   filterTimeInSeconds: [],
-  filtered : true
+  filtered : true,
+  currentTable : 'logs',
 })
 
 export const mutations = {
@@ -21,5 +22,8 @@ export const mutations = {
   },
   replaceFilterTimeInSeconds(state, value) {
     state.filterTimeInSeconds = value
+  },
+  setCurrentTable(state, value) {
+    state.currentTable = value
   }
 }

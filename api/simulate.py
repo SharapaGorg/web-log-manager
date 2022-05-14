@@ -20,9 +20,10 @@ if len(argv) > 1:
     count = int(argv[1])
 
 database = create_session(LINK)
+target_table = get_table('logs1')
 
 for i in range(count):
-    log = generate_log(database)
+    log = generate_log(database, target_table)
     print(log.level, log.text)
     
     sleep(.5)

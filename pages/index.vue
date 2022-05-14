@@ -16,7 +16,7 @@ export default {
   data() {
     return {
       logs : [],
-      api : 'https://shg.radolyn.com/logs'
+      api : 'http://127.0.0.1:5000/logs'
     }
   },
   async mounted() {
@@ -26,12 +26,7 @@ export default {
 
     setInterval(async () => {
       // monitor log updates
-      const currentLogs = await this.$axios.$get(this.api)
-      console.log(1)
-
-      if (this.logs !== currentLogs) {
-        this.logs = currentLogs
-      }
+      await this.filter()
     }, 1000)
 
   },
@@ -47,22 +42,34 @@ export default {
     },
     filterTime_() {
       return this.$store.state.filterTimeInSeconds
+    },
+    filterTable_() {
+      return this.$store.state.currentTable
+    },
+    async filter() {
+      let levels_ = this.filterLevels_()
+      let text_ = this.filterText_()
+      let time_ = this.filterTime_()
+      let table_ = this.filterTable_()
+
+      const currentLogs = await this.$axios.$post(this.api, {
+        levels : levels_,
+        text : text_,
+        seconds : time_,
+        tablename : table_
+      })
+
+      if (currentLogs !== this.logs) {
+        this.logs = currentLogs
+      }
+
+      this.applyFiltered()
     }
   },
   watch: {
     async '$store.state.filtered' (val)  {
       if (!val) {
-        let levels_ = this.filterLevels_()
-        let text_ = this.filterText_()
-        let time_ = this.filterTime_()
-
-        this.logs = await this.$axios.$post(this.api, {
-          levels : levels_,
-          text : text_,
-          seconds : time_
-        })
-
-        this.applyFiltered()
+        await this.filter()
       }
     }
   }
