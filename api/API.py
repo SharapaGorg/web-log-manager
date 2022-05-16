@@ -13,11 +13,16 @@ class Logger:
         return loads(get(self.__API__ + source).text)
 
 
-    def get_logs(self, table_name : str, **options) -> list:
+    def get_logs(self, 
+                table_name : str, 
+                content : str = None,
+                log_level : str = None,
+                time : str = None,
+                **options) -> list:
         source = 'logs'
 
         api_request = post(self.__API__ + source, json = {
-
+            
         })
 
         return api_request.text
