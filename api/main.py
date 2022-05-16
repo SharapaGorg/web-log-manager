@@ -46,6 +46,10 @@ def get_logs_():
         return 'ERROR'
 
 
+@app.route('/', methods=['GET'])
+def docs():
+    return open('docs.html', 'r').read()
+
 @app.route('/tables', methods=['GET', 'POST'])
 def get_tables_():
     return jsonify(get_tables())

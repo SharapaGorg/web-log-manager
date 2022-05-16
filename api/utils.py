@@ -19,6 +19,7 @@ fake = Faker()
 
 DEFAULT_TABLE = 'logs'
 
+
 class Log(Base):
     """
 
@@ -46,8 +47,9 @@ class Log(Base):
 
 
 TABLES = {
-    DEFAULT_TABLE : Log
+    DEFAULT_TABLE: Log
 }
+
 
 def create_session(link: str) -> Session:
     """
@@ -73,18 +75,18 @@ def get_table(tablename: str):
         level = Column(String, nullable=False)
         text = Column(String, nullable=False)
 
-
     Base.metadata.create_all(engine)
     TABLES[tablename] = SelectedTable
 
     return SelectedTable
+
 
 def get_tables() -> list:
     inspector = inspect(engine)
     return inspector.get_table_names()
 
 
-def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablename: str) -> list:
+def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablename : str) -> list:
     """
     Get logs from database
 
@@ -97,6 +99,8 @@ def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablenam
     _table = get_table(tablename)
     logs = select(_table)
 
+    # logs = select(Log)
+
     if levels:
         logs = logs.where(_table.level.in_(levels))
     if text:
@@ -108,7 +112,7 @@ def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablenam
     return _session.scalars(logs)
 
 
-def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, tablename: str) -> list[dict]:
+def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, tablename : str) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
@@ -116,8 +120,15 @@ def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: lis
     if not levels:
         levels = levels_
 
+    if not tablename:
+        tablename = DEFAULT_TABLE
+
     logs = _get_logs(_session, levels, text, seconds, tablename)
     converted_logs: list[dict] = list()
+
+    if not limit:
+        limit = 10 ** 4
+
 
     ignore_vars = ['_sa_instance_state']
     counter = int()

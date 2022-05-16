@@ -57,7 +57,7 @@ export default {
         levels: levels_,
         text: text_,
         seconds: time_,
-        tablename: table_
+        // tablename: table_
       })
 
       if (currentLogs !== this.logs) {

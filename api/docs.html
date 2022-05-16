@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <h2>Logger (mini) API:</h2>
+
+    <div class="function">
+        <span class="cursive">class </span>
+        <span>api.<b>Logger</b> (api_key : str, **options)</span>
+    </div>
+
+    <h3>api.Logger methods:</h3>
+
+    <h4>Setters:</h4>
+
+    <div class="function">
+        <span><b>generate_log</b> (content, log_level, time, **options)</span>
+    </div>
+
+    <div class="description">
+        <div class="arg">content</div>
+        <div class="arg-desc">description of log</div>
+        <div class="arg-desc">string</div><br>
+        <div class="arg">log_level</div>
+        <div class="arg-desc">logging level</div>
+        <div class="arg-desc">string</div><br>
+        <div class="arg">time</div>
+        <div class="arg-desc">time when log registered</div>
+        <div class="arg-desc">string | integer</div><br>
+
+        <div class="arg">RETURN</div>
+        <div class="arg-desc">Performance appraisal</div>
+        <div class="arg-desc">boolean</div><br>
+        <br>
+
+        Figure and add specific log to specific database
+
+    </div>
+
+    <h4>Getters: </h4>
+
+    <div class="function">
+        <span><b>get_tables</b> (**options)</span>
+    </div>
+
+    <div class="description">
+        <div class="arg">RETURN</div>
+        <div class="arg-desc">List of table titles</div>
+        <div class="arg-desc">list [string]</div><br>
+        <br>
+        Get all table titles
+    </div>
+    <br>
+
+    <div class="function">
+        <span><b>get_logs</b> (table_name : str, **options)</span>
+    </div>
+
+    <div class="description">
+        <div class="arg">table_name</div>
+        <div class="arg-desc">Title of table you want to get logs</div>
+        <div class="arg-desc">string</div><br>
+
+        <div class="arg">RETURN</div>
+        <div class="arg-desc">List of logs</div>
+        <div class="arg-desc">list [ dict (content, log_level, time) ]</div><br>
+        <br>
+        Get logs from specific table
+    </div>
+
+</body>
+
+<style>
+    body {
+        background: #17191a;
+    }
+
+    .function {
+        background: gray;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+
+    .arg {
+        width: 200px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .arg-desc {
+        width: 300px;
+        display: inline-block;
+    }
+
+    .description {
+        border: 2px solid gray;
+        border-radius: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        margin-top: 10px;
+    }
+
+    * {
+        color: white;
+    }
+
+    h4 {
+        text-decoration: underline;
+    }
+
+    .cursive {
+        font-style: italic;
+    }
+</style>
+
+</html>

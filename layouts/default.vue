@@ -1,7 +1,7 @@
 <template>
   <div ref="root">
     <div class="navbar">
-      <nuxt-link :to="adminActivated ? 'admin' : '/'">
+      <nuxt-link :to="adminActivated ? 'adminPanel' : '/'">
         <div class="admin-button" @click="activateAdmin">{{ admin }}</div>
       </nuxt-link>
       Log Manager
@@ -68,7 +68,7 @@ export default {
       },
       filterText: '',
       adminActivated : false,
-      admin : 'Admin'
+      admin : 'Tables'
     }
   },
   mounted() {
@@ -101,7 +101,7 @@ export default {
           this.admin = 'Logs'
         }
         else {
-          this.admin = 'Admin'
+          this.admin = 'Tables'
         }
     },
     filter() {
