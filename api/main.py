@@ -1,4 +1,5 @@
 # local server
+from urllib import response
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -56,11 +57,23 @@ def get_tables_():
 
 @app.route('/generate_log', methods=['POST'])
 def generate_log_():
-    data = request.get_json()
-    table_name = data.get('tablename')
-    target_table = get_table(table_name)
+    """
+    
+    tablename : str
+    content : str
+    level : str
 
-    log = generate_log(database, target_table)
+    """
+    data = request.get_json()
+
+    table_name : str = data.get('tablename')
+    content : str = data.get('content')
+    log_level : str = data.get('level')
+
+    try:
+        log = generate_log(database, table_name, log_level, content)
+    except Exception as e:
+        return str(e), 400
 
     return jsonify({
         'id' : log.id,

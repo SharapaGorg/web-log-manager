@@ -9,7 +9,7 @@ from faker import Faker
 
 from config import LINK
 
-levels_ = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
+LEVELS = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 engine = create_engine(LINK)
 Session = sessionmaker(engine)
@@ -86,7 +86,7 @@ def get_tables() -> list:
     return inspector.get_table_names()
 
 
-def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablename : str) -> list:
+def _get_logs(_session: Session, levels: str, text: str, seconds: list, table_name: str) -> list:
     """
     Get logs from database
 
@@ -96,10 +96,11 @@ def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablenam
 
     """
 
-    _table = get_table(tablename)
-    logs = select(_table)
+    if table_name not in engine.table_names():
+        raise Exception(f'Undefined table name : {table_name}')
 
-    # logs = select(Log)
+    _table = get_table(table_name)
+    logs = select(_table)
 
     if levels:
         logs = logs.where(_table.level.in_(levels))
@@ -112,23 +113,22 @@ def _get_logs(_session: Session, levels: str, text: str, seconds: list, tablenam
     return _session.scalars(logs)
 
 
-def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, tablename : str) -> list[dict]:
+def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, table_name: str) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
 
     if not levels:
-        levels = levels_
+        levels = LEVELS
 
-    if not tablename:
-        tablename = DEFAULT_TABLE
+    if not table_name:
+        table_name = DEFAULT_TABLE
 
-    logs = _get_logs(_session, levels, text, seconds, tablename)
+    logs = _get_logs(_session, levels, text, seconds, table_name)
     converted_logs: list[dict] = list()
 
     if not limit:
         limit = 10 ** 4
-
 
     ignore_vars = ['_sa_instance_state']
     counter = int()
@@ -142,7 +142,6 @@ def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: lis
         for var in vars(log):
             if var not in ignore_vars:
                 converted_log[var] = getattr(log, var)
-
 
         counter += 1
         converted_logs.append(converted_log)
@@ -166,15 +165,20 @@ def generate_logs(_session: Session, count: int) -> list[Log]:
     return logs
 
 
-def generate_log(_session: Session, CurrentTable: Base = Log) -> Log:
+def generate_log(_session: Session, table_name : str, level: str, content: str) -> Log:
     """ Generate one log and add to the database """
     y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
+
+    if table_name not in engine.table_names():
+        raise Exception(f'Undefined table name : {table_name}')
+
+    CurrentTable = get_table(table_name)
 
     current_time = f"{y}/{m}/{d}/{hh}/{mm}/{ss}"
     seconds_time = int(time.time())
 
-    log = CurrentTable(time=current_time, level=random.choice(levels_),
-                       text=fake.sentence(10), seconds=seconds_time)
+    log = CurrentTable(time=current_time, level=level,
+                       text=content, seconds=seconds_time)
 
     _session.add(log)
     _session.commit()

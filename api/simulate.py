@@ -21,11 +21,19 @@ if len(argv) > 1:
 logger = Logger(API_KEY)
 
 # get tables
-tables = logger.get_tables()
+tables, status_code = logger.get_tables()
+
+print('AVAILABLE TABLES: ', tables)
 
 # get logs from table
-logs = logger.get_logs('some')
-print(logs)
+for table in tables:
+    logs, status_code = logger.get_logs(table)
+    print(f'[{table}] LOGS COUNT: ', len(logs))
 
 # generate log and add to table
-pass
+table_name = 'SUCK'
+log_level = 'WARNING'
+content = 'Core module messed up all'
+
+log, status_code = logger.generate_log(table_name, content, log_level)
+print(log)
