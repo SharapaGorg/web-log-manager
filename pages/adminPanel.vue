@@ -24,7 +24,8 @@ export default {
   data() {
     return {
       tables: [],
-      api: 'http://127.0.0.1:5000/tables'
+      // api: 'http://127.0.0.1:5000/tables'
+      api : 'https://shg.radolyn.com/tables'
     }
   },
   async mounted() {

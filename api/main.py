@@ -1,5 +1,5 @@
 # local server
-from urllib import response
+import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -7,7 +7,8 @@ from flask_cors import CORS
 from sqlalchemy import *
 
 # additional tools
-from utils import *
+from utils.utils import *
+from utils import logger
 from config import LINK
 from sys import argv
 
@@ -42,14 +43,15 @@ def get_logs_():
 
         return jsonify(logs[::-1])
     except Exception as e:
-        import traceback
-        print(traceback.format_exc(e))
+        logger.error(e)
+        # import traceback
+        # print(traceback.format_exc(e))
         return 'ERROR'
 
 
 @app.route('/', methods=['GET'])
 def docs():
-    return open('docs.html', 'r').read()
+    return open(os.path.join('..', 'docs.html'), 'r').read()
 
 @app.route('/tables', methods=['GET', 'POST'])
 def get_tables_():

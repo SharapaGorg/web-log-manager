@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 import time
-import random
 
 from faker import Faker
 
@@ -149,23 +148,7 @@ def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: lis
     return converted_logs
 
 
-def generate_logs(_session: Session, count: int) -> list[Log]:
-    """
-    Generate logs and add them to database
-    """
-
-    logs = list()
-
-    for i in range(count):
-        new_log = generate_log(_session)
-        logs.append(new_log)
-
-    _session.commit()
-
-    return logs
-
-
-def generate_log(_session: Session, table_name : str, level: str, content: str) -> Log:
+def generate_log(_session: Session, table_name: str, level: str, content: str) -> Log:
     """ Generate one log and add to the database """
     y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
 
