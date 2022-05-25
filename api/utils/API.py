@@ -2,7 +2,7 @@ from requests import get, post
 from json import loads
 
 class Logger:
-    __API__ = 'http://127.0.0.1:5000/'
+    __API__ = 'https://shg.radolyn.com/'
 
     def __init__(self, api_key: str):
         self.api_key = api_key

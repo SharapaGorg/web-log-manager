@@ -1,12 +1,33 @@
 <template>
   <div ref="root">
-    <log
-      v-for="log in logs"
-      :level=log.level
-      :text=log.text
-      :time=log.time
-      :key="log.id"
-    />
+    <div class="top-bar">
+      [
+      <div
+        class="log-time"
+        @click="turnLogState('time')">Time
+      </div>
+      ]
+      [
+      <div
+        class="log-level"
+        @click="turnLogState('level')">Level
+      </div>
+      ]
+      <div
+        class="log-content"
+        @click="turnLogState('content')">Content
+      </div>
+    </div>
+
+    <div class="px-3">
+      <log
+        v-for="log in logs"
+        :level=log.level
+        :text=log.text
+        :time=log.time
+        :key="log.id"
+      />
+    </div>
   </div>
 </template>
 
@@ -16,14 +37,14 @@ export default {
   data() {
     return {
       logs: [],
-      // api: 'http://127.0.0.1:5000/logs',
-      api : 'https://shg.radolyn.com/logs',
       monitor: NaN
     }
   },
   async mounted() {
+    const API = this.$store.state.api + 'logs'
+
     if (!localStorage.getItem('levelsFilter') && !localStorage.getItem('textFilter')) {
-      this.logs = await this.$axios.$get(this.api)
+      this.logs = await this.$axios.$get(API)
     }
 
     this.monitor = setInterval(async () => {
@@ -33,6 +54,10 @@ export default {
 
   },
   methods: {
+    turnLogState(field) {
+      // show or hide log time/level/content
+      this.$store.commit('turnLogState', field)
+    },
     applyFiltered() {
       this.$store.commit('reFilter')
     },
@@ -49,12 +74,14 @@ export default {
       return this.$store.state.currentTable
     },
     async filter() {
+      const API = this.$store.state.api + 'logs'
+
       let levels_ = this.filterLevels_()
       let text_ = this.filterText_()
       let time_ = this.filterTime_()
       let table_ = this.filterTable_()
 
-      const currentLogs = await this.$axios.$post(this.api, {
+      const currentLogs = await this.$axios.$post(API, {
         levels: levels_,
         text: text_,
         seconds: time_,

@@ -1,14 +1,29 @@
 <template>
   <div ref="root" class="log">
     [
-    <div class="time">{{ time }}</div>
+    <div
+      class="time"
+      v-show="logsStates.time">{{ time }}
+    </div>
     ]
     [
-    <div class="level" :style="{ color : levelColor}">{{ level }}</div>
+    <div
+      class="level"
+      :style="{ color : levelColor}"
+      v-show="logsStates.level">{{ level }}
+    </div>
     ]
-    <div class="log-text" v-show="!slice">{{ text }}</div>
-    <div class="log-text" v-show="slice">
-      <span>{{ beforeSlice }}<span class="bg-blue-500">{{ slice }}</span>{{ afterSlice }}</span>
+    <div
+      class="log-text"
+      v-show="!slice && logsStates.content">{{ text }}
+    </div>
+    <div
+      class="log-text"
+      v-show="slice && logsStates.content">
+      <span>{{ beforeSlice }}
+        <span class="bg-blue-500">{{ slice }}</span>
+        {{ afterSlice }}
+      </span>
     </div>
   </div>
 </template>
@@ -27,7 +42,12 @@ export default {
       levelColor: '',
       beforeSlice: '',
       afterSlice: '',
-      slice: ''
+      slice: '',
+      logsStates: {
+        time: true,
+        level: true,
+        content: true
+      }
     }
   },
   async mounted() {
@@ -69,8 +89,17 @@ export default {
     }
   },
   watch: {
-    '$store.state.filtered' (val) {
-        this.detectRange_()
+    '$store.state.filtered'(val) {
+      this.detectRange_()
+    },
+    '$store.state.logStates.time'(val) {
+      this.logsStates.time = val
+    },
+    '$store.state.logStates.level' (val) {
+      this.logsStates.level = val
+    },
+    '$store.state.logStates.content' (val) {
+      this.logsStates.content = val
     }
   }
 }

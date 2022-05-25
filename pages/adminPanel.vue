@@ -25,7 +25,7 @@ export default {
     return {
       tables: [],
       // api: 'http://127.0.0.1:5000/tables'
-      api : 'https://shg.radolyn.com/tables'
+      // api : 'https://shg.radolyn.com/tables'
     }
   },
   async mounted() {
@@ -33,7 +33,8 @@ export default {
   },
   methods: {
     async get_tables() {
-      this.tables = await this.$axios.$get(this.api)
+      const api = this.$store.state.api + 'tables'
+      this.tables = await this.$axios.$get(api)
     }
   }
 }

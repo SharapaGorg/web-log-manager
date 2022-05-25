@@ -7,7 +7,7 @@
       Log Manager
       <div class="menu-button" @click="sideBarActivated = !sideBarActivated"></div>
     </div>
-    <div class="px-3 pt-[56px]">
+    <div class="pt-[56px]">
       <nuxt/>
     </div>
     <div class="sidebar" v-show="sideBarActivated">

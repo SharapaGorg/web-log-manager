@@ -5,9 +5,18 @@ export const state = () => ({
   filterTimeInSeconds: [],
   filtered : true,
   currentTable : 'logs',
+  api : 'http://127.0.0.1:5000/',
+  logStates: {
+    time : true,
+    level : true,
+    content : true
+  }
 })
 
 export const mutations = {
+  turnLogState(state, field) {
+    state.logStates[field] = !state.logStates[field]
+  },
   reFilter(state) {
     state.filtered = !state.filtered
   },

@@ -41,6 +41,7 @@ def get_logs_():
 
         logs = get_logs(database, levels, limit, text, seconds, tablename)
 
+        # print(jsonify(logs[::-1]))
         return jsonify(logs[::-1])
     except Exception as e:
         logger.error(e)
