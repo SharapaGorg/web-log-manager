@@ -40,7 +40,7 @@ for table in tables:
 levels = ['WARNING', 'INFO', 'DEBUG', 'ERROR']
 
 for i in range(count):
-    table_name = 'logs'
+    table_name = 'logs1'
     log_level = random.choice(levels)
     content = faker.sentence(random.randint(4, 12))
 

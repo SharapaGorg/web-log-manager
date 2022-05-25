@@ -28,8 +28,11 @@ export default {
   },
   methods: {
     selectTable() {
-      this.$store.commit('setCurrentTable', this.title)
+      // select table
       localStorage.setItem('currentTable', this.title)
+      this.$store.commit('setCurrentTable', this.title)
+      // update logs
+      this.$store.commit('reFilter')
     }
   }
 }

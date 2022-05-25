@@ -1,5 +1,6 @@
 <template>
   <div ref="root" class="log">
+    {{ id }}
     [
     <div
       class="time"
@@ -35,7 +36,8 @@ export default {
     level: String,
     text: String,
     time: String,
-    seconds: Number
+    seconds: Number,
+    id : Number
   },
   data() {
     return {

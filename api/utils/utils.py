@@ -85,7 +85,23 @@ def get_tables() -> list:
     return inspector.get_table_names()
 
 
-def _get_logs(_session: Session, levels: str, text: str, seconds: list, table_name: str) -> list:
+def get_last_id(_session: Session, tablename: str) -> int:
+    _table = get_table(tablename)
+    count_query = select([func.count()]).select_from(_table)
+    count = _session.execute(count_query).scalar()
+
+    return count
+
+
+def _get_logs(
+        _session: Session,
+        levels: str,
+        text: str,
+        seconds: list,
+        table_name: str,
+        offset: int,
+        limit: int,
+        from_id: int) -> list:
     """
     Get logs from database
 
@@ -101,18 +117,42 @@ def _get_logs(_session: Session, levels: str, text: str, seconds: list, table_na
     _table = get_table(table_name)
     logs = select(_table)
 
+    if not limit:
+        limit = 10
+
+    if offset is None:
+        offset = 0
+
+    if from_id is None:
+        from_id = limit
+
     if levels:
         logs = logs.where(_table.level.in_(levels))
+
     if text:
         logs = logs.where(_table.text.contains(text))
+
     if seconds:
         logs = logs.where(_table.seconds >= seconds[0]).where(
             _table.seconds <= seconds[1])
 
+    logs = logs.where(_table.id <= (from_id - offset)
+                        ).where(_table.id > (from_id - offset - limit))
+
+    print(from_id)
+
     return _session.scalars(logs)
 
 
-def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: list, table_name: str) -> list[dict]:
+def get_logs(
+        _session: Session,
+        levels: str,
+        limit: int,
+        text: str,
+        seconds: list,
+        table_name: str,
+        offset: int,
+        from_id: int) -> list[dict]:
     """
     Convert list of log objects to list of dictionaries
     """
@@ -123,7 +163,8 @@ def get_logs(_session: Session, levels: str, limit: int, text: str, seconds: lis
     if not table_name:
         table_name = DEFAULT_TABLE
 
-    logs = _get_logs(_session, levels, text, seconds, table_name)
+    logs = _get_logs(_session, levels, text, seconds,
+                     table_name, offset, limit, from_id)
     converted_logs: list[dict] = list()
 
     if not limit:

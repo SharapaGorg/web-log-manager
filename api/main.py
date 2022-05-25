@@ -28,25 +28,30 @@ def get_logs_():
         seconds - range
         text
         limit - count of logs that will be returned
+        tablename
+        offset
+        from_id
 
     """
     try:
         data = request.get_json()
 
-        levels: list = data.get('levels') if data else None
-        seconds: list = data.get('seconds') if data else None
-        text: str = data.get('text') if data else None
-        limit: int = data.get('limit') if data else None
-        tablename : str = data.get('tablename') if data else None
+        levels = seconds = text = limit = tablename = offset = from_id = None
 
-        logs = get_logs(database, levels, limit, text, seconds, tablename)
+        if data:
+            levels: list = data.get('levels')
+            seconds: list = data.get('seconds')
+            text: str = data.get('text') 
+            limit: int = data.get('limit') 
+            tablename : str = data.get('tablename') 
+            offset : int = data.get('offset')
+            from_id : int = data.get('from_id')
 
-        # print(jsonify(logs[::-1]))
+        logs = get_logs(database, levels, limit, text, seconds, tablename, offset, from_id)
+
         return jsonify(logs[::-1])
     except Exception as e:
         logger.error(e)
-        # import traceback
-        # print(traceback.format_exc(e))
         return 'ERROR'
 
 
@@ -57,6 +62,25 @@ def docs():
 @app.route('/tables', methods=['GET', 'POST'])
 def get_tables_():
     return jsonify(get_tables())
+
+@app.route('/last', methods=['GET', 'POST'])
+def get_last():
+    """
+    
+    returns last element id
+
+    """
+    try:
+        data = request.get_json()
+        tablename = None
+
+        if data:
+            tablename : str = data.get('tablename')
+
+        return str(get_last_id(database, tablename))
+    except Exception as e:
+        logger.error(f'[get_last] {e}')
+        return 'ERROR'
 
 @app.route('/generate_log', methods=['POST'])
 def generate_log_():

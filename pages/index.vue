@@ -25,6 +25,7 @@
         :level=log.level
         :text=log.text
         :time=log.time
+        :id="log.id"
         :key="log.id"
       />
     </div>
@@ -37,26 +38,62 @@ export default {
   data() {
     return {
       logs: [],
-      monitor: NaN
+      monitor: NaN,
+      lastId: 0,
+      limit: 5
     }
   },
   async mounted() {
-    const API = this.$store.state.api + 'logs'
-
-    if (!localStorage.getItem('levelsFilter') && !localStorage.getItem('textFilter')) {
-      this.logs = await this.$axios.$get(API)
-    }
-
     this.monitor = setInterval(async () => {
       // monitor log updates
       await this.filter()
     }, 1000)
+
+    if (!this.$store.state.filtered) {
+      this.applyFiltered()
+      await this.reRender()
+    }
 
   },
   methods: {
     turnLogState(field) {
       // show or hide log time/level/content
       this.$store.commit('turnLogState', field)
+    },
+    async getLastId() {
+      let table_ = this.filterTable_()
+
+      return await this.$axios.$post(this.API() + 'last', {
+        tablename: table_
+      })
+    },
+    API() {
+      return this.$store.state.api
+    },
+    async reRender() {
+      this.lastId = await this.getLastId()
+      this.logs = []
+
+      let levels_ = this.filterLevels_()
+      let text_ = this.filterText_()
+      let time_ = this.filterTime_()
+      let table_ = this.filterTable_()
+
+      for (let i = 0; i < 100; i++) {
+        let newPack = await this.$axios.$post(this.API() + 'logs', {
+          limit: this.limit,
+          offset: i * this.limit,
+          from_id: this.lastId,
+          table: table_,
+          time: time_,
+          text: text_,
+          levels: levels_
+        })
+
+        for (let elem of newPack) {
+          this.logs.push(elem)
+        }
+      }
     },
     applyFiltered() {
       this.$store.commit('reFilter')
@@ -74,25 +111,35 @@ export default {
       return this.$store.state.currentTable
     },
     async filter() {
-      const API = this.$store.state.api + 'logs'
-
       let levels_ = this.filterLevels_()
       let text_ = this.filterText_()
       let time_ = this.filterTime_()
       let table_ = this.filterTable_()
 
-      const currentLogs = await this.$axios.$post(API, {
-        levels: levels_,
-        text: text_,
-        seconds: time_,
-        tablename: table_
-      })
+      let last = await this.getLastId()
 
-      if (currentLogs !== this.logs) {
-        this.logs = currentLogs
+      if (last > this.lastId) {
+        // add logs til last
+        const limit = last - this.lastId
+
+        let newLogs = await this.$axios.$post(this.API() + 'logs', {
+          tablename: table_,
+          limit: limit,
+          from_id: last,
+          levels: levels_,
+          text: text_,
+          time: time_
+        })
+
+        for (let elem of newLogs.reverse()) {
+          this.logs.unshift(elem)
+        }
+      }
+      if (last < this.lastId) {
+        // remove all logs til last
       }
 
-      this.applyFiltered()
+      this.lastId = last;
     }
   },
   destroyed() {
@@ -101,7 +148,8 @@ export default {
   watch: {
     async '$store.state.filtered'(val) {
       if (!val) {
-        await this.filter()
+          this.applyFiltered()
+          await this.reRender()
       }
     },
   }
