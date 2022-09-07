@@ -5,20 +5,20 @@ from flask_cors import CORS
 
 # logs database interaction
 from sqlalchemy import *
-from database import Session
+from database.database import Session
 
 # additional tools
 from utils.utils import *
 from utils import logger
-from config import LINK
 from sys import argv
 
 app = Flask(__name__)
-
 CORS(app)
 
-# database = create_session(LINK)
-database = Session()
+try:
+    database = Session()
+except Exception as e:
+    logger.error(f"Problem with connecting to database: {e}")
 
 @app.route('/logs', methods=['GET', 'POST'])
 def get_logs_():
@@ -101,15 +101,18 @@ def generate_log_():
 
     """
     data = request.get_json()
+    session = Session()
 
     table_name : str = data.get('tablename')
     content : str = data.get('content')
     log_level : str = data.get('level')
 
     try:
-        log = generate_log(database, table_name, log_level, content)
+        log = generate_log(session, table_name, log_level, content)
     except Exception as e:
         return str(e), 400
+
+    # session.close()
 
     return jsonify({
         'id' : log.id,

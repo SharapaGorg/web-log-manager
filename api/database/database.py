@@ -1,14 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 
 from config import LINK
 from utils import Base
+from database.engine import engine
 import os
 
 
 # dev (local) mode
-engine = create_engine(f"sqlite:///base")
+# engine = create_engine(f"sqlite:///base")
 
 # prod (remote) mode
 # engine = create_engine(LINK)

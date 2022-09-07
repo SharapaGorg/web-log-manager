@@ -1,23 +1,21 @@
 from sqlalchemy import *
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.ext.declarative import declarative_base
 
 import time
 
 from faker import Faker
+from database.engine import engine
 
-from .models import Log
+from .models import Log, Base
 from .constants import DEFAULT_TABLE
 
 LEVELS = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
 fake = Faker()
-Base = declarative_base()
 
 TABLES = {
     DEFAULT_TABLE: Log
 }
-
 
 def create_session(link: str) -> "Session":
     """
@@ -31,6 +29,7 @@ def create_session(link: str) -> "Session":
 def get_table(tablename: str):
     if tablename in TABLES:
         return TABLES[tablename]
+
 
     class SelectedTable(Base):
         __tablename__ = tablename

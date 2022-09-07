@@ -4,3 +4,4 @@ env/
 __pycache__/
 .vscode/
 base
+database/__pycache__/
