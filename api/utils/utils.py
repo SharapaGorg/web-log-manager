@@ -1,62 +1,31 @@
 from sqlalchemy import *
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 
 import time
 
 from faker import Faker
 
-from config import LINK
+from .models import Log
+from .constants import DEFAULT_TABLE
 
 LEVELS = ['ERROR', 'WARNING', 'INFO', 'DEBUG']
 
-engine = create_engine(LINK)
-Session = sessionmaker(engine)
-Base = declarative_base()
-
 fake = Faker()
-
-DEFAULT_TABLE = 'logs'
-
-
-class Log(Base):
-    """
-
-    Description of logs table
-
-    id : int
-    time : year/day/hour/minute/second
-    level : ERROR | WARNING | INFO | DEBUG
-    text : str
-    seconds : int
-
-    """
-
-    __tablename__ = DEFAULT_TABLE
-
-    id = Column(Integer, nullable=False, unique=True,
-                primary_key=True, autoincrement=True)
-    time = Column(String, nullable=False)
-    seconds = Column(Integer, nullable=False)
-    level = Column(String, nullable=False)
-    text = Column(String, nullable=False)
-
-    def __repr__(self) -> str:
-        return "<{0.__class__.__name__} (id={0.id!r}, time={0.time!r}, level={0.level!r}, text={0.text!r}, seconds={0.seconds!r})>".format(self)
-
+Base = declarative_base()
 
 TABLES = {
     DEFAULT_TABLE: Log
 }
 
 
-def create_session(link: str) -> Session:
+def create_session(link: str) -> "Session":
     """
     Create session to provide interaction with database
     """
-    _session_ = sessionmaker(create_engine(link))
+    _session_factory = sessionmaker(create_engine(link))
 
-    return _session_()
+    return scoped_session(_session_factory)
 
 
 def get_table(tablename: str):
@@ -85,7 +54,7 @@ def get_tables() -> list:
     return inspector.get_table_names()
 
 
-def get_last_id(_session: Session, tablename: str) -> int:
+def get_last_id(_session: "Session", tablename: str) -> int:
     _table = get_table(tablename)
     count_query = select([func.count()]).select_from(_table)
     count = _session.execute(count_query).scalar()
@@ -94,7 +63,7 @@ def get_last_id(_session: Session, tablename: str) -> int:
 
 
 def _get_logs(
-        _session: Session,
+        _session: "Session",
         levels: str,
         text: str,
         seconds: list,
@@ -145,7 +114,7 @@ def _get_logs(
 
 
 def get_logs(
-        _session: Session,
+        _session: "Session",
         levels: str,
         limit: int,
         text: str,
@@ -189,7 +158,7 @@ def get_logs(
     return converted_logs
 
 
-def generate_log(_session: Session, table_name: str, level: str, content: str) -> Log:
+def generate_log(_session: "Session", table_name: str, level: str, content: str) -> Log:
     """ Generate one log and add to the database """
     y, m, d, hh, mm, ss, weekday, jday, dst = time.localtime()
 
@@ -208,6 +177,3 @@ def generate_log(_session: Session, table_name: str, level: str, content: str) -
     _session.commit()
 
     return log
-
-
-Base.metadata.create_all(engine)

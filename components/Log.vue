@@ -1,6 +1,5 @@
 <template>
   <div ref="root" class="log">
-    {{ id }}
     [
     <div
       class="time"

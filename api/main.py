@@ -5,6 +5,7 @@ from flask_cors import CORS
 
 # logs database interaction
 from sqlalchemy import *
+from database import Session
 
 # additional tools
 from utils.utils import *
@@ -15,7 +16,9 @@ from sys import argv
 app = Flask(__name__)
 
 CORS(app)
-database = create_session(LINK)
+
+# database = create_session(LINK)
+database = Session()
 
 @app.route('/logs', methods=['GET', 'POST'])
 def get_logs_():
@@ -35,6 +38,7 @@ def get_logs_():
     """
     try:
         data = request.get_json()
+        session = Session()
 
         levels = seconds = text = limit = tablename = offset = from_id = None
 
@@ -47,7 +51,8 @@ def get_logs_():
             offset : int = data.get('offset')
             from_id : int = data.get('from_id')
 
-        logs = get_logs(database, levels, limit, text, seconds, tablename, offset, from_id)
+        logs = get_logs(session, levels, limit, text, seconds, tablename, offset, from_id)
+        session.close()
 
         return jsonify(logs[::-1])
     except Exception as e:
@@ -73,11 +78,15 @@ def get_last():
     try:
         data = request.get_json()
         tablename = None
+        session = Session()
 
         if data:
             tablename : str = data.get('tablename')
 
-        return str(get_last_id(database, tablename))
+        result = str(get_last_id(session, tablename))
+        session.close()
+
+        return result
     except Exception as e:
         logger.error(f'[get_last] {e}')
         return 'ERROR'
