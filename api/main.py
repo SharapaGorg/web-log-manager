@@ -126,7 +126,7 @@ if len(argv) == 1:
     raise Exception('(--dev | --prod) args excepted')
 
 if argv[1] == '--dev':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
 
 if argv[1] == '--prod':
     app.run(debug=True, host='localhost', port=9001)

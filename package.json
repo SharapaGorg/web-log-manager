@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "nuxt",
+    "dev": "concurrently \"NODE_OPTIONS='--openssl-legacy-provider' nuxt\" \"cd api && ./start.sh\"",
+    "dev:frontend": "NODE_OPTIONS='--openssl-legacy-provider' nuxt",
+    "dev:api": "cd api && ./start.sh",
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate"
@@ -22,6 +24,7 @@
   },
   "devDependencies": {
     "@nuxtjs/tailwindcss": "5.0.0-4",
+    "concurrently": "^9.2.1",
     "postcss": "^8.4.4"
   }
 }
