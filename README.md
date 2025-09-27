@@ -67,4 +67,4 @@ yarn generate
 
 ### Demo
 
-![img.png](assets/demo.mp4)
+https://github.com/user-attachments/assets/60731607-c083-4c2a-95aa-2b4ef24b3515
